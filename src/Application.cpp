@@ -1,3 +1,5 @@
+#include<iostream>
+#include <glew.h>
 #include <GLFW/glfw3.h>
 
 int main(void)
@@ -18,6 +20,8 @@ int main(void)
 
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
+
+    glewInit();
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
