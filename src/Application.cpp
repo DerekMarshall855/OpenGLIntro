@@ -127,6 +127,8 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 
+    glfwSwapInterval(1);  // Gsync or frame limited based on monitor
+
     if (glewInit() != GLEW_OK)
         std::cout << "Error!" << std::endl;
 
@@ -162,17 +164,33 @@ int main(void)
     ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
     
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
+    // Have to bound shader before doing uniform edits (so it knows where to send data)
     GLCall(glUseProgram(shader));
 
+    GLCall(int location = glGetUniformLocation(shader, "u_Color"));
+    ASSERT(location != -1);  // If location -1 the program couldn't find the uniform (either doesnt exist or is unused)
+    GLCall(glUniform4f(location, 0.8f, 0.3f, 0.8f, 1.0f));
+    float r = 0.0f;
+    float increment = 0.05f;
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
         GLCall(glClear(GL_COLOR_BUFFER_BIT));
 
+        // Uniforms are set PER DRAW
+        GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
         // Draws CURRENTLY BOUND buffer
         // MUST USE UNSIGNED INT IN A BUFFER
         GLCall(glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, nullptr));
+
+        if (r > 1.0f)
+            increment = -0.05f;
+        else if (r < 0.0f)
+            increment = 0.05f;
+
+        r += increment;
+
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
 
