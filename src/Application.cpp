@@ -1,6 +1,7 @@
 #include "Renderer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
+#include "VertexArray.h"
 #include <iostream>
 #include <glew.h>
 #include <GLFW/glfw3.h>
@@ -144,11 +145,11 @@ int main(void)
         GLCall(glGenVertexArrays(1, &vao));
         GLCall(glBindVertexArray(vao));
         // Note: Use docs.gl to figure this stuff out, great docs
+        VertexArray va;
         VertexBuffer vb(positions, sizeof(positions));
-
-        GLCall(glEnableVertexAttribArray(0));
-        // This line links the vertex array and the buffer (index 0 [first param] of vao is bound to currently bound buffer)
-        GLCall(glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, (const void*)0));
+        VertexBufferLayout layout;
+        layout.Push<float>(2);
+        va.AddBuffer(vb, layout);
 
         // Can use unsigned char to save memory, but limits to 0-255 indices
         IndexBuffer ib(indices, sizeof(indices) / sizeof(unsigned int));
@@ -179,7 +180,7 @@ int main(void)
             // Uniforms are set PER DRAW
             GLCall(glUniform4f(location, r, 0.3f, 0.8f, 1.0f));
 
-            GLCall(glBindVertexArray(vao));
+            va.Bind();
             ib.Bind();
             // Draws CURRENTLY BOUND buffer
             // MUST USE UNSIGNED INT IN A BUFFER
