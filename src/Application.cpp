@@ -59,9 +59,6 @@ int main(void)
          The better one depends on situation (maybe, 2017 vid lol), but opengl recommends you use them
          Best to run tests and see whether global vao or object specific vao is faster based on prod env
         */
-        unsigned int vao;
-        GLCall(glGenVertexArrays(1, &vao));
-        GLCall(glBindVertexArray(vao));
         // Note: Use docs.gl to figure this stuff out, great docs
         VertexArray va;
         VertexBuffer vb(positions, sizeof(positions));
