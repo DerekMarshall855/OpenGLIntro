@@ -2,10 +2,11 @@
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+#include "VertexBufferLayout.h"
 #include "Shader.h"
-#include <iostream>
-#include <glew.h>
 #include <GLFW/glfw3.h>
+#include <glew.h>
+#include <iostream>
 #include <string>
 
 int main(void)
@@ -81,20 +82,18 @@ int main(void)
 
         float r = 0.0f;
         float increment = 0.05f;
+        Renderer renderer;
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
             /* Render here */
-            GLCall(glClear(GL_COLOR_BUFFER_BIT));
+            renderer.Clear();
 
             shader.Bind();
-            // Uniforms are set PER DRAW
             shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-            va.Bind();
-            ib.Bind();
-            // Draws CURRENTLY BOUND buffer
-            // MUST USE UNSIGNED INT IN A BUFFER
-            GLCall(glDrawElements(GL_TRIANGLES, sizeof(indices) / sizeof(unsigned int), GL_UNSIGNED_INT, nullptr));
+
+            // More traditional setup takes in a material instead of a shader (Material stores shader + extra info)
+            renderer.Draw(va, ib, shader);
 
             // Can clamp here but won't since it's quick practice
             if (r > 1.0f)
