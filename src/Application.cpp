@@ -4,11 +4,13 @@
 #include "VertexArray.h"
 #include "VertexBufferLayout.h"
 #include "Shader.h"
+#include "Texture.h"
 #include <GLFW/glfw3.h>
 #include <glew.h>
 #include <iostream>
 #include <string>
 
+// Note: Use docs.gl to figure this stuff out, great docs
 int main(void)
 {
     GLFWwindow* window;
@@ -42,10 +44,10 @@ int main(void)
     // Index buffer to reuse existing vertices's, don't repeat coordinate positions
     {
         float positions[]{
-            -0.5f, -0.5f, // 0
-             0.5f, -0.5f, // 1
-             0.5f,  0.5f, // 2
-            -0.5f,  0.5f, // 3
+            -0.5f, -0.5f, 0.0f, 0.0f, // 0
+             0.5f, -0.5f, 1.0f, 0.0f, // 1
+             0.5f,  0.5f, 1.0f, 1.0f, // 2
+            -0.5f,  0.5f, 0.0f, 1.0f  // 3
         };
 
         unsigned int indices[] = {
@@ -53,17 +55,13 @@ int main(void)
             2, 3, 0
         };
 
-        /*
-         Two common methods for vao:
-            - Use global vao where you rebind buffers to it before draw
-            - Have one vao for each piece of geometry
-         The better one depends on situation (maybe, 2017 vid lol), but opengl recommends you use them
-         Best to run tests and see whether global vao or object specific vao is faster based on prod env
-        */
-        // Note: Use docs.gl to figure this stuff out, great docs
+        GLCall(glEnable(GL_BLEND));
+        GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
+
         VertexArray va;
         VertexBuffer vb(positions, sizeof(positions));
         VertexBufferLayout layout;
+        layout.Push<float>(2);
         layout.Push<float>(2);
         va.AddBuffer(vb, layout);
 
@@ -72,8 +70,11 @@ int main(void)
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
-
         shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+
+        Texture texture("res/textures/Maya.jpg");
+        texture.Bind();
+        shader.SetUniform1i("u_Texture", 0);
 
         va.UnBind();
         vb.Unbind();
