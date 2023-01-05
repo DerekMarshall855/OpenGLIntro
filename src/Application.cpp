@@ -5,8 +5,12 @@
 #include "VertexBufferLayout.h"
 #include "Shader.h"
 #include "Texture.h"
+
 #include <GLFW/glfw3.h>
 #include <glew.h>
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <iostream>
 #include <string>
 
@@ -68,6 +72,8 @@ int main(void)
         // Can use unsigned char to save memory, but limits to 0-255 indices
         IndexBuffer ib(indices, sizeof(indices) / sizeof(unsigned int));
 
+        glm::mat4 proj = glm::ortho(-2.0f, 2.0f, -1.5f, 1.5f, -1.0f, 1.0f);
+
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
         shader.SetUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
@@ -75,6 +81,7 @@ int main(void)
         Texture texture("res/textures/Maya.jpg");
         texture.Bind();
         shader.SetUniform1i("u_Texture", 0);
+        shader.SetUniformMat4f("u_MVP", proj);
 
         va.UnBind();
         vb.Unbind();
