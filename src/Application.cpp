@@ -49,9 +49,9 @@ int main(void)
     {
         float positions[]{
             100.0f, 100.0f, 0.0f, 0.0f, // 0
-             200.0f,  100.0f, 1.0f, 0.0f, // 1
-             200.0f,  200.0f, 1.0f, 1.0f, // 2
-            100.0f,  200.0f, 0.0f, 1.0f  // 3
+            200.0f, 100.0f, 1.0f, 0.0f, // 1
+            200.0f, 200.0f, 1.0f, 1.0f, // 2
+            100.0f, 200.0f, 0.0f, 1.0f  // 3
         };
 
         unsigned int indices[] = {
@@ -72,8 +72,14 @@ int main(void)
         // Can use unsigned char to save memory, but limits to 0-255 indices
         IndexBuffer ib(indices, sizeof(indices) / sizeof(unsigned int));
 
+        // Proj maps our objects from our pixel ratio to the -1 to 1 range opengl understands (projects our data onto screen)
         glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-        glm::vec4 vp(100.0f, 100.0f, 0.0f, 1.0f);
+        // View controls the camera, moving the camera left by 100.0f pixels moves the objects right by 100.0f
+        glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f));
+        // Model controls how we change the actual verticies of the model in the scene
+        glm::mat4 model = glm::translate(glm::mat4(1.0f), glm::vec3(200.0f, 200.0f, 0.0f));
+
+        glm::mat4 mvp = proj * view * model;
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
@@ -82,7 +88,7 @@ int main(void)
         Texture texture("res/textures/Maya.jpg");
         texture.Bind();
         shader.SetUniform1i("u_Texture", 0);
-        shader.SetUniformMat4f("u_MVP", proj);
+        shader.SetUniformMat4f("u_MVP", mvp);
 
         va.UnBind();
         vb.Unbind();
