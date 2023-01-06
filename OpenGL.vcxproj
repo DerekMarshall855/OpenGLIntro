@@ -164,6 +164,7 @@
     <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include=".gitignore" />
     <None Include="README.md" />
     <None Include="res\shaders\Basic.shader" />
     <None Include="src\vendor\glm\detail\func_common.inl" />

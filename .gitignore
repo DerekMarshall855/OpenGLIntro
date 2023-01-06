@@ -1,2 +1,0 @@
-# don't include the hard imported libs in github
-src/vendor/*
