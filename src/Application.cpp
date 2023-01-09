@@ -114,6 +114,7 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
+            // This is inefficient for 2D rendering, recalling draw per object is slow. Better to batch render with a larger vertex buffer (this is simple for example)
             {
 				glm::mat4 model{ glm::translate(glm::mat4(1.0f), translationA) };
 				glm::mat4 mvp{ proj * view * model };
