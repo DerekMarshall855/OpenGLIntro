@@ -51,10 +51,10 @@ int main(void)
     // Index buffer to reuse existing vertices's, don't repeat coordinate positions
     {
         float positions[]{
-            100.0f, 100.0f, 0.0f, 0.0f, // 0
-            200.0f, 100.0f, 1.0f, 0.0f, // 1
-            200.0f, 200.0f, 1.0f, 1.0f, // 2
-            100.0f, 200.0f, 0.0f, 1.0f  // 3
+            -50.0f, -50.0f, 0.0f, 0.0f, // 0
+            50.0f, -50.0f, 1.0f, 0.0f, // 1
+            50.0f, 50.0f, 1.0f, 1.0f, // 2
+            -50.0f, 50.0f, 0.0f, 1.0f  // 3
         };
 
         unsigned int indices[]{
@@ -78,7 +78,8 @@ int main(void)
         // Proj maps our objects from our pixel ratio to the -1 to 1 range opengl understands (projects our data onto screen)
         glm::mat4 proj{ glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f) };
         // View controls the camera, moving the camera left by 100.0f pixels moves the objects right by 100.0f
-        glm::mat4 view{ glm::translate(glm::mat4(1.0f), glm::vec3(-100.0f, 0.0f, 0.0f)) };
+        // Redundant here, but can be changed in future
+        glm::mat4 view{ glm::translate(glm::mat4(1.0f), glm::vec3(0.0f, 0.0f, 0.0f)) };
 
         Shader shader("res/shaders/Basic.shader");
         shader.Bind();
@@ -101,7 +102,8 @@ int main(void)
         ImGui::StyleColorsDark();
         ImGui_ImplGlfw_InitForOpenGL(window, true);
         ImGui_ImplOpenGL3_Init(glsl_version);
-        glm::vec3 translation{ (200.0f, 200.0f, 0.0f) };
+        glm::vec3 translationA{ (200.0f, 200.0f, 0.0f) };
+        glm::vec3 translationB{ (400.0f, 200.0f, 0.0f) };
         /* Loop until the user closes the window */
         while (!glfwWindowShouldClose(window))
         {
@@ -112,15 +114,20 @@ int main(void)
             ImGui_ImplGlfw_NewFrame();
             ImGui::NewFrame();
 
-            glm::mat4 model{ glm::translate(glm::mat4(1.0f), translation) };
-            glm::mat4 mvp{ proj * view * model };
-            shader.Bind();
-            shader.SetUniform4f("u_Color", r, 0.3f, 0.8f, 1.0f);
-            shader.SetUniformMat4f("u_MVP", mvp);
-
-            // More traditional setup takes in a material instead of a shader (Material stores shader + extra info)
-            renderer.Draw(va, ib, shader);
-
+            {
+				glm::mat4 model{ glm::translate(glm::mat4(1.0f), translationA) };
+				glm::mat4 mvp{ proj * view * model };
+                shader.Bind();
+				shader.SetUniformMat4f("u_MVP", mvp); 
+                renderer.Draw(va, ib, shader);
+            }
+            {
+				glm::mat4 model{ glm::translate(glm::mat4(1.0f), translationB) };
+				glm::mat4 mvp{ proj * view * model };
+                shader.Bind();
+				shader.SetUniformMat4f("u_MVP", mvp); 
+                renderer.Draw(va, ib, shader);
+            }
             // Can clamp here but won't since it's quick practice
             if (r > 1.0f)
                 increment = -0.01f;
@@ -130,7 +137,8 @@ int main(void)
             r += increment;
 			{
                 ImGui::Begin("Apple");
-				ImGui::SliderFloat3("Translation", &translation.x, 0.0f, 960.0f);            // Edit 1 float using a slider from 0.0f to 1.0f
+                ImGui::SliderFloat3("TranslationA", &translationA.x, 0.0f, 960.0f);
+                ImGui::SliderFloat3("TranslationB", &translationB.x, 0.0f, 960.0f);
 				ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 				ImGui::End();
 			}
