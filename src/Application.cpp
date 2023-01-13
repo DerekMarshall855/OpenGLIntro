@@ -6,6 +6,7 @@
 #include "Shader.h"
 #include "Texture.h"
 #include "tests/TestClearColor.h"
+#include "tests/TestTexture2D.h"
 
 #include <GLFW/glfw3.h>
 #include <glew.h>
@@ -67,6 +68,7 @@ int main(void)
         currentTest = testMenu;
 
         testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+        testMenu->RegisterTest<test::TestTexture2D>("2D Texture");
 
         while (!glfwWindowShouldClose(window))
         {

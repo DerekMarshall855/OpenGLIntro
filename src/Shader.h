@@ -21,7 +21,7 @@ public:
 	~Shader();
 
 	void Bind() const;
-	void UnBind() const;
+	void Unbind() const;
 
 	// set uniforms
 	void SetUniform1i(const std::string& name, int value);
